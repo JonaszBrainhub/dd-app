@@ -2,15 +2,15 @@
  * program entry point
  */
 
-import { A } from "andale";
-import * as Fs from "node:fs";
-import * as Routes from "./Routes";
-import * as Db from "./Db";
-import { ulid } from "ulid";
-import { faker } from "@faker-js/faker";
-import { sql } from "drizzle-orm";
+import { A } from 'andale';
+import * as Fs from 'node:fs';
+import * as Routes from './Routes';
+import * as Db from './Db';
+import { ulid } from 'ulid';
+import { faker } from '@faker-js/faker';
+import { sql } from 'drizzle-orm';
 
-const dbHandle = "conduit.sqlite";
+const dbHandle = 'conduit.sqlite';
 
 const dbSeed = Fs.existsSync(dbHandle)
   ? undefined
@@ -25,27 +25,27 @@ const dbSeed = Fs.existsSync(dbHandle)
           password: faker.internet.password(),
           email: faker.internet.email(),
           bio: faker.helpers.maybe(() => faker.lorem.sentence()) ?? null,
-          avatar: faker.internet.avatar(),
-        }),
+          avatar: faker.image.avatar(),
+        })
       );
 
       const tags = Array.from(
         { length: 50 },
         (): Db.Tag => ({
           name: faker.lorem.word(),
-        }),
+        })
       );
 
       const articles = faker.helpers
         .arrayElements(users, { min: 100, max: Infinity })
-        .map((user) =>
+        .map(user =>
           faker.helpers.multiple(
             (): Db.Article => {
               const date = faker.date.past({ years: 5 });
               const title = faker.lorem.words();
               return {
                 id: ulid(),
-                slug: title.replaceAll(" ", "-"),
+                slug: title.replaceAll(' ', '-'),
                 title,
                 description: faker.lorem.sentence(),
                 body: faker.lorem.paragraphs(),
@@ -59,13 +59,13 @@ const dbSeed = Fs.existsSync(dbHandle)
             },
             {
               count: { min: 1, max: 10 },
-            },
-          ),
+            }
+          )
         )
         .flat();
 
       const comments = articles
-        .map((article) =>
+        .map(article =>
           faker.helpers.arrayElements(users).map((user): Db.Comment => {
             const date = faker.date.between({
               from: article.createdAt,
@@ -78,43 +78,43 @@ const dbSeed = Fs.existsSync(dbHandle)
               articleId: article.id,
               content: faker.lorem.sentence(),
             };
-          }),
+          })
         )
         .flat();
 
       const follows = users
-        .map((user) =>
+        .map(user =>
           faker.helpers
             .arrayElements(users, { min: 3, max: 10 })
-            .filter((follows) => follows !== user)
+            .filter(follows => follows !== user)
             .map(
               (follows): Db.Follows => ({
                 followsId: follows.id,
                 userId: user.id,
-              }),
-            ),
+              })
+            )
         )
         .flat();
 
       const favorites = users
-        .map((user) =>
+        .map(user =>
           faker.helpers.arrayElements(articles).map(
             (article): Db.Favorites => ({
               articleId: article.id,
               userId: user.id,
-            }),
-          ),
+            })
+          )
         )
         .flat();
 
       const tagged = articles
-        .map((article) =>
+        .map(article =>
           faker.helpers.arrayElements(tags, { min: 1, max: 4 }).map(
             (tag): Db.Tagged => ({
               articleId: article.id,
               tag: tag.name,
-            }),
-          ),
+            })
+          )
         )
         .flat();
 
