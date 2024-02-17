@@ -130,7 +130,7 @@ export function Shell({
                       New Article
                     </NavLink>
                   </li>
-                  <li class="nav-item">
+                  <li class="nav-item" data-testid='user-settings'>
                     <NavLink url={["GET /profile/settings"]}>Settings</NavLink>
                   </li>
                 </>

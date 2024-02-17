@@ -174,3 +174,4 @@ dist
 # playwright
 playwright-report
 test-results
+playwright/.auth
