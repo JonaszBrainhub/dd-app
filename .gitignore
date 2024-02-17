@@ -169,3 +169,8 @@ dist
 .pnp.\*
 
 *.sqlite
+
+
+# playwright
+playwright-report
+test-results
